@@ -1,5 +1,7 @@
 import sqlite3
 import os
+import time
+import threading
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from utils.dbManager import adminResetDemo, getSpecificData, getAllData, startUpDataValidation, getCSVDataSourceHeaders
@@ -12,12 +14,42 @@ app = Flask(__name__)
 # Allow frontend (Next.js) to call Flask during dev
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
+def check_and_notify_validation():
+    """Check for unintegrated data sources on startup and send notifications"""
+    # Wait a bit for the frontend to be ready before sending notifications
+    time.sleep(3)
+    
+    validation_result = startUpDataValidation()
+    if validation_result != True:
+        # Send error notification for each missing data source
+        for missing_data in validation_result:
+            tech_stack = missing_data[0]
+            table_name = missing_data[1].replace(".csv", "")
+            message = f"Error: {tech_stack}-{table_name} isn't setup. Check Data Validation page."
+            
+            # Send notification to frontend
+            try:
+                requests.post(
+                    "http://localhost:3000/api/Notification",
+                    json={
+                        "message": message,
+                        "type": "error",
+                        "duration": 15000
+                    },
+                    timeout=2
+                )
+                print(f"Sent validation notification: {message}")
+            except Exception as e:
+                print(f"Failed to send notification: {message} - {e}")
+        
+        print(f"⚠ Found {len(validation_result)} unintegrated data source(s)")
+    else:
+        print("✓ All data sources are integrated")
+
 # Health check
 @app.get("/api/health")
 def health():
     return jsonify({"status": "ok"})
-
-adminResetDemo()
 
 @app.get("/api/barData")
 def barData():
@@ -49,7 +81,7 @@ def index():
         for missing_data in validation_result:
             tech_stack = missing_data[0]
             table_name = missing_data[1].replace(".csv", "")
-            message = f"Error: {tech_stack}-{table_name} isn't setup in {tech_stack}.db. Check Data Validation page."
+            message = f"Error: {tech_stack}-{table_name} isn't setup in {tech_stack}.db."
             
             # Send notification to frontend
             try:
@@ -83,12 +115,13 @@ def get_raw_data_sources():
         if os.path.isdir(tech_path):
             for csv_file in os.listdir(tech_path):
                 if csv_file.endswith(".csv"):
-                    # Parse "hubSpot-contacts.csv" -> {techStack: "hubSpot", table: "contacts"}
-                    parts = csv_file.replace(".csv", "").split("-", 1)
-                    if len(parts) == 2:
+                    # Use folder name (tech_stack) for correct casing, extract table from filename
+                    # Example: folder="hubSpot", file="hubspot-contacts.csv" -> table="contacts"
+                    if "-" in csv_file:
+                        table_name = csv_file.split("-", 1)[1].replace(".csv", "")
                         raw_data_list.append({
-                            "techStack": parts[0],
-                            "table": parts[1],
+                            "techStack": tech_stack,  # Use folder name, not filename
+                            "table": table_name,
                             "fileName": csv_file
                         })
     
@@ -190,4 +223,11 @@ from utils.dbManager import getCSVDataBreakDown, createNewTable, checkAttributeT
     
     
 if __name__ == "__main__":
+    # Reset databases to demo state (removes companies, keeps contacts & traffic_acquisition)
+    adminResetDemo()
+    
+    # Check validation status on startup in a background thread
+    validation_thread = threading.Thread(target=check_and_notify_validation, daemon=True)
+    validation_thread.start()
+    
     app.run(host="0.0.0.0", port=5000, debug=True)

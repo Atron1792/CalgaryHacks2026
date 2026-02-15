@@ -160,16 +160,18 @@ def startUpDataValidation():
         
         # for each csv file
         for techStackItemTableCSV in techStackItemTables:
-            # add the csv file name to the CSV List
-            rawDataCSVList.append(techStackItemTableCSV)
+            # Store as tuple: (techStackName from folder, csv filename)
+            rawDataCSVList.append((techStackItem, techStackItemTableCSV))
     
     rawDataCSVList2 = []
     
-    # output ex: "hubSpot-contacts.csv" -> [hubSpot, contacts]
-    for rawDataCSV in rawDataCSVList:
-        rawDataCSV = rawDataCSV.split("-")
-        rawDataCSV[1].replace(".csv", "")
-        rawDataCSVList2.append(rawDataCSV)
+    # output ex: ("hubSpot", "hubspot-contacts.csv") -> [hubSpot, contacts]
+    for tech_stack, csv_file in rawDataCSVList:
+        # Use the folder name (tech_stack) which has correct casing
+        # Extract table name from the part after the dash
+        if "-" in csv_file:
+            table_name = csv_file.split("-", 1)[1].replace(".csv", "")
+            rawDataCSVList2.append([tech_stack, table_name])
     
     orderedDataPathList = os.listdir(orderedDataPath)
     
@@ -191,8 +193,9 @@ def startUpDataValidation():
             dbCursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
             tables = dbCursor.fetchall()
             if tables:
-                for table_name in tables:
-                    tempOutput = [orderedDataTechItem, table_name]
+                for table_tuple in tables:
+                    # table_tuple is like ('contacts',) - extract the string
+                    tempOutput = [orderedDataTechItem, table_tuple[0]]
                     orderedDataActiveList.append(tempOutput)
                 
             dbCursor.close()

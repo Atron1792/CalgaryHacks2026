@@ -2,16 +2,24 @@
 
 how to run this code:
 
---> create virtual environment (we love those)
---> --> pip install requirements
+--> create virtual environment (we love those):
+```bash
+pip install requirements
+```
 
 create two separate terminals:
 --> one in root directory, one in frontend directory
---> in the front end directory terminal: npm install
+--> in the front end directory terminal: 
+```bash
+npm install
+```
 
 after setup, to run the code you:
 --> in root directory terminal, run: py backend/app.py
---> in the front end directory terminal, run: npm run dev
+--> in the front end directory terminal:
+```bash
+npm run dev
+```
 
 
 Demo format:

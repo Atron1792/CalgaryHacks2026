@@ -1,0 +1,119 @@
+/**
+ * RawDataSources Component
+ * 
+ * Displays a table of all available raw CSV data sources with their integration status.
+ * Allows users to integrate or ignore unintegrated sources.
+ */
+
+"use client";
+
+type DataSource = {
+  techStack: string;
+  table: string;
+  fileName?: string;
+  dataType?: string;
+};
+
+type RawDataSourcesProps = {
+  rawData: DataSource[];
+  orderedData: DataSource[];
+  ignoredData: string[]; // Array of "techStack-table" keys
+  integrating: string | null;
+  onIntegrate: (source: DataSource) => void;
+  onIgnore: (source: DataSource) => void;
+};
+
+export default function RawDataSources({
+  rawData,
+  orderedData,
+  ignoredData,
+  integrating,
+  onIntegrate,
+  onIgnore,
+}: RawDataSourcesProps) {
+  const isIntegrated = (source: DataSource) => {
+    return orderedData.some(
+      (od) => od.techStack === source.techStack && od.table === source.table
+    );
+  };
+
+  const isIgnored = (source: DataSource) => {
+    const key = `${source.techStack}-${source.table}`;
+    return ignoredData.includes(key);
+  };
+
+  return (
+    <div className="mb-8">
+      <h2 className="text-2xl font-semibold mb-4">Available Raw Data Sources</h2>
+      <div className="bg-slate-800/50 rounded-lg border border-slate-700 overflow-hidden">
+        <table className="w-full">
+          <thead className="bg-slate-700/50">
+            <tr>
+              <th className="text-left p-4 font-medium">Tech Stack</th>
+              <th className="text-left p-4 font-medium">Table</th>
+              <th className="text-left p-4 font-medium">File Name</th>
+              <th className="text-left p-4 font-medium">Status</th>
+              <th className="text-left p-4 font-medium">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rawData.map((source, idx) => {
+              const integrated = isIntegrated(source);
+              const ignored = isIgnored(source);
+              const key = `${source.techStack}-${source.table}`;
+              const isIntegratingThis = integrating === key;
+
+              return (
+                <tr
+                  key={idx}
+                  className="border-t border-slate-700 hover:bg-slate-700/30"
+                >
+                  <td className="p-4">{source.techStack}</td>
+                  <td className="p-4">{source.table}</td>
+                  <td className="p-4 text-slate-400">{source.fileName}</td>
+                  <td className="p-4">
+                    {integrated ? (
+                      <span className="text-green-400">✓ Integrated</span>
+                    ) : ignored ? (
+                      <span className="text-gray-400">⊘ Ignored</span>
+                    ) : (
+                      <span className="text-orange-400">⚠ Not Integrated</span>
+                    )}
+                  </td>
+                  <td className="p-4">
+                    {!integrated && !ignored && (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => onIntegrate(source)}
+                          disabled={isIntegratingThis}
+                          className="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed px-4 py-2 rounded transition-colors"
+                        >
+                          {isIntegratingThis ? "Integrating..." : "Integrate"}
+                        </button>
+                        <button
+                          onClick={() => onIgnore(source)}
+                          disabled={isIntegratingThis}
+                          className="bg-slate-600 hover:bg-slate-700 disabled:bg-slate-600 disabled:cursor-not-allowed px-4 py-2 rounded transition-colors"
+                        >
+                          Ignore
+                        </button>
+                      </div>
+                    )}
+                    {ignored && (
+                      <button
+                        onClick={() => onIgnore(source)}
+                        className="bg-slate-600 hover:bg-slate-700 px-4 py-2 rounded transition-colors"
+                      >
+                        Unignore
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
