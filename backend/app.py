@@ -16,14 +16,14 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 def health():
     return jsonify({"status": "ok"})
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
-
-@app.route("/api/barData")
+@app.get("/api/barData")
 def barData():
     outputValues = []
     barData = getSpecificData("traffic_acquisition","googleAnalytics4", ["Channel", "Sessions"], [False, False], "analytics")
     for row in barData:
         outputValues.append({row[0]:row[1]})
-        
-    return json.dumps(outputValues)
+    
+    return jsonify(outputValues)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)

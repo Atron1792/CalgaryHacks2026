@@ -22,7 +22,7 @@ export default function BarGraph() {
     async function fetchData() {
       try {
         setLoading(true);
-        const res = await fetch("/api/bar-data", { cache: "no-store" });
+        const res = await fetch("/api/barData", { cache: "no-store" });
         
         if (!res.ok) {
           throw new Error(`HTTP ${res.status}: ${res.statusText}`);

@@ -2,7 +2,7 @@ export async function GET() {
   const base = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 
   try {
-    const res = await fetch(`${base}/api/bar-data`, { cache: "no-store" });
+    const res = await fetch(`${base}/api/barData`, { cache: "no-store" });
 
     // If Flask errors, pass it through so you can see the status
     const text = await res.text();
