@@ -25,7 +25,7 @@ export function Sidebar() {
         <Link href="/" className="inline-flex items-center gap-2">
           <Image src="/icon0.svg" alt="Logo" width={32} height={32} className="rounded-md" />
           <div className="leading-tight">
-            <div className="text-sm font-semibold text-white">Pantheon</div>
+            <div className="text- font-semibold text-white">Pantheon</div>
           </div>
         </Link>
       </div>
