@@ -22,3 +22,8 @@ Variable formats:
 --> tHeadersType: [header1datatype, header2datatype, et]
 --> techStackItemName (Tech stack item name): lowercase string 
 --> tType (CRM or analytics): lowercase string 
+
+getSpecificData:
+--> Attributes: ["attribute1", "attribute2", etc]
+--> conditions: ["(result)", false, etc]
+--> --> Using the example above, attribute1 must equal (result), attribute2 doesn't have a condition.

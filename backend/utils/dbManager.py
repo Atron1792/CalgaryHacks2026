@@ -81,3 +81,47 @@ def createNewTable(tName, techStackItemName, tHeaders, tHeadersType, tData, tTyp
 def startUpDataValidation():
     rawDataTechStackItem = os.listdir(rawDataPath)
     
+# tName: table name
+# techStackItemName: also the same as the database name
+# attributes: the list of attributes that you want
+# conditions: the list of equal conditions 
+# tType: analytics or CRM
+def getSpecificData(tName, techStackItemName, attributes, conditions, tType):
+    dbLocalPath = orderedDataPath + "/" + tType + "/" + techStackItemName + ".db"
+    
+    dbConnection = sqlite3.connect(dbLocalPath)
+    dbCursor = dbConnection.cursor()
+    
+    # get sql string of attributes wanted. 
+    
+    sqlAttributes = ""
+    
+    for i in range(len(attributes)):
+        if (i == len(attributes)):
+            sqlAttributes += attributes[i]
+            break
+        sqlAttributes += attributes[i] + ", "
+    
+    # get sql string of conditions set. 
+    
+    sqlConditions = ""
+    sqlConditionsExist = False
+    for condition in conditions:
+        if(condition != False):
+            sqlConditionsExist = True
+            break
+    
+    if(sqlConditionsExist == True):
+        sqlConditions += " WHERE "
+        for i in range(len(conditions)):
+            if(conditions[i] != False):
+                if(sqlConditions == ""):
+                    sqlConditions += attributes[i] + " = '" + conditions[i] + "'" 
+                    continue
+                sqlConditions += "AND " + attributes[i] + " = '" + conditions[i] + "'" 
+    
+    dbCursor.execute("SELECT " + sqlAttributes + " FROM " + tName + sqlConditions)
+    result = dbCursor.fetchall()
+    dbCursor.close()
+    dbConnection.close()
+    return result
