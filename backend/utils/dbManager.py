@@ -1,8 +1,24 @@
 import sqlite3
 import os
+import pandas as pd
 
 orderedDataPath = "../../Data/orderedData"
 rawDataPath = "../../Data/rawData"
+
+def adminCreateStartingDatabase():
+    
+    print("hello world")
+
+# gets the list of headers and the row data list (- headers)
+def getCSVDataBreakDown(tName, techStackItemName):
+    localCSVPath = rawDataPath + "/" + techStackItemName + "/" + techStackItemName + "-" + tName + ".csv"
+    
+    df = pd.read_csv(localCSVPath)
+    
+    columns = list(df.columns)
+    
+    data = df.values.toList()
+    return [columns, data]
 
 # tName: table name
 # techStackItemName: software name
@@ -126,6 +142,9 @@ def startUpDataValidation():
                 for table_name in tables:
                     tempOutput = [orderedDataTechItem, table_name]
                     orderedDataActiveList.append(tempOutput)
+                
+            dbCursor.close()
+            dbConnection.close()
     
     functionOutput = []
     
@@ -178,10 +197,10 @@ def getSpecificData(tName, techStackItemName, attributes, conditions, tType):
         sqlConditions += " WHERE "
         for i in range(len(conditions)):
             if(conditions[i] != False):
-                if(sqlConditions == ""):
+                if(sqlConditions == " WHERE "):
                     sqlConditions += attributes[i] + " = '" + conditions[i] + "'" 
                     continue
-                sqlConditions += "AND " + attributes[i] + " = '" + conditions[i] + "'" 
+                sqlConditions += " AND " + attributes[i] + " = '" + conditions[i] + "'" 
     
     dbCursor.execute("SELECT " + sqlAttributes + " FROM " + tName + sqlConditions)
     result = dbCursor.fetchall()
