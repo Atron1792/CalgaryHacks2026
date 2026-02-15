@@ -47,18 +47,18 @@ def createNewTable(tName, techStackItemName, tHeaders, tHeadersType, tData, tTyp
     if(tableExist == False):
         os.makedirs(newFolderPath, exist_ok=True)
     
-    # dbConnection = ""../../Data/orderedData/{{techItem}}/{{techItem}}.db"
+    # dbConnection = ""../../Data/orderedData/{{techStackItemName}}/{{techStackItemName}}.db"
     # ps: if db file doesn't exist, it will create a new one.
-    dbConnection = sqlite3.connect(newFolderPath + "/" + techItem + ".db")
+    dbConnection = sqlite3.connect(newFolderPath + "/" + techStackItemName + ".db")
     dbCursor = dbConnection.cursor()
     
     # get all of the headers and data type into an sql string
     sqlHeaderString = ""
     for i in range(len(tHeaders)):
-        if(i == len(tHeaders)):
-            sqlHeaderString += tHeaders[i] + " " + tHeadersType
+        if(i == len(tHeaders)-1):
+            sqlHeaderString += tHeaders[i] + " " + tHeadersType[i]
         else:
-            sqlHeaderString += tHeaders[i] + " " + tHeadersType + ","
+            sqlHeaderString += tHeaders[i] + " " + tHeadersType[i] + ","
             
     # execute the sql create table using table name and header string
     dbCursor.execute("CREATE TABLE " + tName + " (" + sqlHeaderString + ");")
@@ -70,14 +70,14 @@ def createNewTable(tName, techStackItemName, tHeaders, tHeadersType, tData, tTyp
         sqlDataString += "("
         
         for h in range(len(tData[i])):
-            if(h == len(tData[i])):
+            if(h == len(tData[i])-1):
                 sqlDataString += tData[i][h]
                 break
             sqlDataString += tData[i][h] + ","
             
         sqlDataString += ")"                        
         
-        if(i != len(tData)):
+        if(i != len(tData)-1):
             sqlDataString += ","
         else:
             sqlDataString += ";"
@@ -179,7 +179,7 @@ def getSpecificData(tName, techStackItemName, attributes, conditions, tType):
     sqlAttributes = ""
     
     for i in range(len(attributes)):
-        if (i == len(attributes)):
+        if (i == len(attributes)-1):
             sqlAttributes += attributes[i]
             break
         sqlAttributes += attributes[i] + ", "
