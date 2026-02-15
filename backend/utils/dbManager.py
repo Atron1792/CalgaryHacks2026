@@ -77,9 +77,72 @@ def createNewTable(tName, techStackItemName, tHeaders, tHeadersType, tData, tTyp
 
 # returns true if no new data source detected 
 # if new data source detected, return:
-#   [Tech stack item name, Table name, [header1, header2, etc], case 1 or 2]
+#   [[Tech stack item name, Table name], etc]
 def startUpDataValidation():
-    rawDataTechStackItem = os.listdir(rawDataPath)
+    # list each folder name in raw data (tech stack name in this case)
+    rawDataPathList = os.listdir(rawDataPath)
+    
+    # list of csv names of each raw data csv
+    rawDataCSVList = []
+    
+    # for each tech stack item in tech stack list
+    for techStackItem in rawDataPathList:
+        # get the list of csv files of the tech stack item
+        techStackItemTables = os.listdir(rawDataPath + "/" + techStackItem)
+        
+        # for each csv file
+        for techStackItemTableCSV in techStackItemTables:
+            # add the csv file name to the CSV List
+            rawDataCSVList.append(techStackItemTableCSV)
+    
+    rawDataCSVList2 = []
+    
+    # output ex: "hubSpot-contacts.csv" -> [hubSpot, contacts]
+    for rawDataCSV in rawDataCSVList:
+        rawDataCSV = rawDataCSV.split("-")
+        rawDataCSV[1].replace(".csv", "")
+        rawDataCSVList2.append(rawDataCSV)
+    
+    orderedDataPathList = os.listdir(orderedDataPath)
+    
+    # [[Tech Item Name, table name], [Tech Item Name, table name]]
+    # output ex: [hubSpot, contacts]
+    orderedDataActiveList = []
+    
+    # for every ordered data type (analytics or CRM)
+    for orderedDataType in orderedDataPathList:
+        
+        # get the list of folders (tech items) in that folder
+        orderedDataTypeList = os.listdir(orderedDataPath + "/" + orderedDataType)
+        
+        # for every tech item
+        for orderedDataTechItem in orderedDataTypeList:
+            # ex: ../../Data/orderedData/analytics/googleAnalytics4/googleAnalytics4.db
+            dbConnection = sqlite3.connect(orderedDataPath + "/" + orderedDataType + "/" + orderedDataTechItem + "/" + orderedDataTechItem + ".db")
+            dbCursor = dbConnection.cursor()
+            dbCursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+            tables = dbCursor.fetchall()
+            if tables:
+                for table_name in tables:
+                    tempOutput = [orderedDataTechItem, table_name]
+                    orderedDataActiveList.append(tempOutput)
+    
+    functionOutput = []
+    
+    for rawDataCSVItem in rawDataCSVList2:
+        CSVtoDBFound = False
+        for orderedDataActive in orderedDataActiveList:
+            if (orderedDataActive[0] == rawDataCSVItem[0] and orderedDataActive[1] == rawDataCSVItem[1]):
+                CSVtoDBFound = True
+                break
+            
+        if CSVtoDBFound == False:
+            functionOutput.append(rawDataCSVItem)
+    
+    if (len(functionOutput) == 0):
+        return False
+    
+    return functionOutput
     
 # tName: table name
 # techStackItemName: also the same as the database name

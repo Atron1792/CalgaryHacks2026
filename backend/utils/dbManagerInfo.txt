@@ -7,8 +7,7 @@ startUpDataValidation:
 --> if discrepancy, return notification.
 --> returns 1 of 3 cases:
 --> --> case 1: all data sources is inside ordered data. returns true
---> --> case 2: tech stack item database doesn't exist, returns: [tech stack item name, table name, list of headers, 1]
---> --> case 3: tech stack item database does exist, returns: [tech stack item name, table name, list of headers, 2]
+--> --> case 2: tech stack item database doesn't exist, returns: [tech stack item name, table name]
 
 Variable formats:
 --> tData:
@@ -22,6 +21,8 @@ Variable formats:
 --> tHeadersType: [header1datatype, header2datatype, et]
 --> techStackItemName (Tech stack item name): lowercase string 
 --> tType (CRM or analytics): lowercase string 
+--> attributes: [attribute1, attribute2, etc]
+--> conditions: [conditionForAttribute1, conditionForAttribute2, etc]
 
 getSpecificData:
 --> Attributes: ["attribute1", "attribute2", etc]
