@@ -2,8 +2,10 @@ import sqlite3
 import os
 import pandas as pd
 
-orderedDataPath = "../../Data/orderedData"
-rawDataPath = "../../Data/rawData"
+# Get the directory of the current file and construct absolute paths
+currentDir = os.path.dirname(os.path.abspath(__file__))
+orderedDataPath = os.path.join(currentDir, "../../Data/orderedData")
+rawDataPath = os.path.join(currentDir, "../../Data/rawData")
 
 # checks if a csv attribute can be converted to integer
 # returns "INTEGER" if all values can be converted, "TEXT" otherwise
@@ -34,7 +36,7 @@ def adminCreateStartingDatabase():
     ga4Rows = ga4Data[1]
     ga4HeaderTypes = []
     
-    for i in range(len(ga4_headers)):
+    for i in range(len(ga4Headers)):
         columnData = [row[i] for row in ga4Rows]
         ga4HeaderTypes.append(checkAttributeType(columnData))
     
@@ -42,6 +44,7 @@ def adminCreateStartingDatabase():
 
 # gets the list of headers and the row data list (- headers)
 def getCSVDataBreakDown(tName, techStackItemName):
+    
     localCSVPath = rawDataPath + "/" + techStackItemName + "/" + techStackItemName + "-" + tName + ".csv"
     
     df = pd.read_csv(localCSVPath)
