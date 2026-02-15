@@ -1,11 +1,21 @@
 export async function GET() {
-  // Flask base URL (dev)
-  const base = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5000";
+  const base = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 
-  // Fetch from Flask
-  const res = await fetch(`${base}/api/bar-data`, { cache: "no-store" });
-  const data = await res.json();
+  try {
+    const res = await fetch(`${base}/api/bar-data`, { cache: "no-store" });
 
-  // Return to browser
-  return Response.json(data, { status: res.status });
+    // If Flask errors, pass it through so you can see the status
+    const text = await res.text();
+
+    return new Response(text, {
+      status: res.status,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (err) {
+    // If Flask is unreachable, you'll get here (connection refused, etc.)
+    return Response.json(
+      { error: "Failed to reach Flask backend from Next.js" },
+      { status: 502 }
+    );
+  }
 }

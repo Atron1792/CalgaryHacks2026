@@ -13,11 +13,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-black text-white">
+      <body suppressHydrationWarning className="min-h-screen bg-black text-white">
         <div className="min-h-screen flex">
           {/* Persistent sidebar across ALL routes */}
           <Sidebar />
-
           {/* Page content */}
           <main className="flex-1 min-w-0">{children}</main>
         </div>

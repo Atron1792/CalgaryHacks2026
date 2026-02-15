@@ -1,89 +1,87 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
-type BarDatum = {
+// Bar data structure
+type BarData = {
   label: string;
   value: number;
 };
 
 /**
- * Simple bar graph component.
- * Fetches data from /api/bar-data (Next proxy -> Flask -> SQLite).
+ * BarGraph component - displays Google Analytics traffic data
+ * Fetches data from Flask backend using SQLite database
  */
-export default function Bargraph() {
-  const [data, setData] = useState<BarDatum[]>([]);
+export default function BarGraph() {
+  const [data, setData] = useState<BarData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Compute max value for bar scaling
-  const maxValue = useMemo(() => {
-    if (data.length === 0) return 0;
-    return Math.max(...data.map((d) => d.value));
-  }, [data]);
-
+  // Fetch data from backend
   useEffect(() => {
-    async function load() {
+    async function fetchData() {
       try {
         setLoading(true);
-        setError(null);
-
-        // Call Next.js API route (same-origin)
         const res = await fetch("/api/bar-data", { cache: "no-store" });
-        if (!res.ok) throw new Error(`Request failed (${res.status})`);
-
-        const json = (await res.json()) as BarDatum[];
-
-        // Basic validation (helps catch backend shape issues)
-        const cleaned = json
-          .filter((d) => typeof d.label === "string" && typeof d.value === "number")
-          .map((d) => ({ label: d.label, value: d.value }));
-
-        setData(cleaned);
-      } catch (e: any) {
-        setError(e?.message ?? "Unknown error");
+        
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
+        
+        const json = await res.json();
+        setData(json);
+      } catch (err: any) {
+        setError(err.message || "Failed to load data");
       } finally {
         setLoading(false);
       }
     }
 
-    load();
+    fetchData();
   }, []);
 
-  if (loading) return <div>Loading bar graph…</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (data.length === 0) return <div>No data found.</div>;
+  // Calculate max value for scaling bars
+  const maxValue = Math.max(...data.map(d => d.value), 0);
+
+  if (loading) {
+    return <div className="text-white p-6">Loading chart data...</div>;
+  }
+
+  if (error) {
+    return <div className="text-red-400 p-6">Error: {error}</div>;
+  }
+
+  if (data.length === 0) {
+    return <div className="text-white p-6">No data available</div>;
+  }
 
   return (
-    <div style={{ background: "white", border: "1px solid #e5e7eb", borderRadius: 12, padding: 16 }}>
-      <h2 style={{ margin: 0, marginBottom: 12, fontSize: 16, fontWeight: 600 }}>
-        Bar Graph
+    <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-6">
+      <h2 className="text-white text-xl font-semibold mb-6">
+        Google Analytics - Traffic by Channel
       </h2>
 
-      <div style={{ display: "grid", gap: 10 }}>
-        {data.map((d) => {
-          const pct = maxValue === 0 ? 0 : (d.value / maxValue) * 100;
+      <div className="space-y-4">
+        {data.map((item) => {
+          const percentage = maxValue > 0 ? (item.value / maxValue) * 100 : 0;
 
           return (
-            <div key={d.label} style={{ display: "grid", gridTemplateColumns: "120px 1fr 60px", gap: 10, alignItems: "center" }}>
-              {/* Label */}
-              <div style={{ fontSize: 14, color: "#374151" }}>{d.label}</div>
+            <div key={item.label} className="grid grid-cols-[150px_1fr_100px] gap-4 items-center">
+              {/* Channel name */}
+              <div className="text-sm text-gray-300 truncate">{item.label}</div>
 
-              {/* Bar track + bar */}
-              <div style={{ height: 12, background: "#f3f4f6", borderRadius: 999 }}>
+              {/* Bar */}
+              <div className="h-8 bg-zinc-800 rounded-full overflow-hidden">
                 <div
-                  style={{
-                    height: 12,
-                    width: `${pct}%`,
-                    background: "#111827",
-                    borderRadius: 999,
-                    transition: "width 200ms ease",
-                  }}
+                  className="h-full bg-blue-500 rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${percentage}%` }}
                 />
               </div>
 
-              {/* Value */}
-              <div style={{ fontSize: 14, color: "#111827", textAlign: "right" }}>{d.value}</div>
+              {/* Session count */}
+              <div className="text-sm text-white text-right font-medium tabular-nums">
+                {item.value.toLocaleString()}
+              </div>
             </div>
           );
         })}
@@ -91,3 +89,5 @@ export default function Bargraph() {
     </div>
   );
 }
+
+
