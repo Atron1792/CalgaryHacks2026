@@ -12,7 +12,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning className="min-h-screen bg-black text-white">
         <div className="min-h-screen flex">
           {/* Persistent sidebar across ALL routes */}
