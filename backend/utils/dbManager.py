@@ -229,35 +229,25 @@ def getSpecificData(tName, techStackItemName, attributes, conditions, tType):
     dbConnection = sqlite3.connect(dbLocalPath)
     dbCursor = dbConnection.cursor()
     
-    # get sql string of attributes wanted. 
+    # Build attributes list with proper quoting
+    quoted_attributes = ['"' + attr + '"' for attr in attributes]
+    sqlAttributes = ", ".join(quoted_attributes)
     
-    sqlAttributes = ""
-    
-    for i in range(len(attributes)):
-        if (i == len(attributes)-1):
-            sqlAttributes += attributes[i]
-            break
-        sqlAttributes += attributes[i] + ", "
-    
-    # get sql string of conditions set. 
-    
+    # Build WHERE clause with parameterized conditions
     sqlConditions = ""
-    sqlConditionsExist = False
-    for condition in conditions:
-        if(condition != False):
-            sqlConditionsExist = True
-            break
+    params = []
     
-    if(sqlConditionsExist == True):
-        sqlConditions += " WHERE "
-        for i in range(len(conditions)):
-            if(conditions[i] != False):
-                if(sqlConditions == " WHERE "):
-                    sqlConditions += attributes[i] + " = '" + conditions[i] + "'" 
-                    continue
-                sqlConditions += " AND " + attributes[i] + " = '" + conditions[i] + "'" 
+    for i in range(len(conditions)):
+        if(conditions[i] != False):
+            if not sqlConditions:
+                sqlConditions = " WHERE "
+            else:
+                sqlConditions += " AND "
+            sqlConditions += '"' + attributes[i] + '" = ?'
+            params.append(conditions[i])
     
-    dbCursor.execute("SELECT " + sqlAttributes + " FROM " + tName + sqlConditions)
+    query = "SELECT " + sqlAttributes + " FROM \"" + tName + "\"" + sqlConditions
+    dbCursor.execute(query, params)
     result = dbCursor.fetchall()
     dbCursor.close()
     dbConnection.close()
@@ -268,12 +258,13 @@ def getAllData(tName, techStackItemName, conditions, tType):
     dbConnection = sqlite3.connect(dbLocalPath)
     dbCursor = dbConnection.cursor() 
     
-    sqlConditions = ""
+    query = "SELECT * FROM \"" + tName + "\""
+    params = []
+    
     if (conditions != ""):
-        sqlConditions = " WHERE "
-        sqlConditions += conditions
+        query += " WHERE " + conditions
         
-    dbCursor.execute("SELECT * FROM " + tName + sqlConditions + ";")
+    dbCursor.execute(query, params)
     result = dbCursor.fetchall()
     dbCursor.close()
     dbConnection.close()

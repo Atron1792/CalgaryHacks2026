@@ -1,11 +1,20 @@
-import sqlite3
 import os
 import time
 import threading
+import sqlite3
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from utils.dbManager import adminResetDemo, getSpecificData, getAllData, startUpDataValidation, getCSVDataSourceHeaders
 import requests
+from utils.dbManager import (
+    adminResetDemo, 
+    getSpecificData, 
+    getAllData, 
+    startUpDataValidation, 
+    getCSVDataSourceHeaders,
+    getCSVDataBreakDown,
+    createNewTable,
+    checkAttributeType
+)
 
 
 # App setup
@@ -64,44 +73,25 @@ def barData():
 @app.route("/api/contactData", methods=['POST','GET'])
 def contactData():
     outputValues = []
-    if request.method == 'POST' or request.method == 'GET':
-        filterType = request.form['filterType']
+    # Handle both GET and POST requests
+    filterType = request.args.get('filterType') or request.form.get('filterType')
+    
+    if filterType:
         if filterType == "none":
             outputValues = getAllData("contacts","hubSpot", "" ,"CRM")
         else:
-            outputValues = getAllData("contacts","hubSpot", "'Marketing contact status' = '" + filterType + "'" ,"CRM")
+            # Use parameterized query approach for safety
+            outputValues = getAllData("contacts","hubSpot", f"\"Marketing contact status\" = '{filterType}'" ,"CRM")
         
     return jsonify(outputValues)
 
 @app.route("/")
 def index():
-    validation_result = startUpDataValidation()
-    if validation_result != True:
-        # Send error notification for each missing data source
-        for missing_data in validation_result:
-            tech_stack = missing_data[0]
-            table_name = missing_data[1].replace(".csv", "")
-            message = f"Error: {tech_stack}-{table_name} isn't setup in {tech_stack}.db."
-            
-            # Send notification to frontend
-            try:
-                requests.post(
-                    "http://localhost:3000/api/Notification",
-                    json={
-                        "message": message,
-                        "type": "error",
-                        "duration": 10000
-                    },
-                    timeout=2
-                )
-            except:
-                print(f"Failed to send notification: {message}")
-    
-    return jsonify({"status": "ok", "validation": validation_result})
+    return jsonify({"status": "ok"})
 
 @app.route("/api/companies")
 def companyData():
-    outputValues = getSpecificData("companies","hubSpot", ["'Company name'"], [False], "CRM")
+    outputValues = getSpecificData("companies","hubSpot", ["Company name"], [False], "CRM")
     return jsonify(outputValues)
 
 @app.route("/api/validation/raw-data")
@@ -218,8 +208,6 @@ def integrate_data_source():
         return jsonify({"success": True, "message": "Data source integrated successfully"})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
-
-from utils.dbManager import getCSVDataBreakDown, createNewTable, checkAttributeType
     
     
 if __name__ == "__main__":
