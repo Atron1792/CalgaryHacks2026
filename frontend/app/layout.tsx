@@ -1,15 +1,25 @@
-// frontend/app/layout.tsx
-import Sidebar from './components/sidebar';
-import './globals.css';
+import "./globals.css";
+import { Sidebar } from "@/app/components/Sidebar";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export const metadata = {
+  title: "Panethon",
+  description: "A unified data visualization dashboard.",
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
-      <head />
-      <body className="layout-root">
-        <div className="layout-grid">
+      <body className="min-h-screen bg-black text-white">
+        <div className="min-h-screen flex">
+          {/* Persistent sidebar across ALL routes */}
           <Sidebar />
-          <main className="content">{children}</main>
+
+          {/* Page content */}
+          <main className="flex-1 min-w-0">{children}</main>
         </div>
       </body>
     </html>

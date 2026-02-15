@@ -1,47 +1,26 @@
-/* frontend/app/globals.css */
+@import "tailwindcss";
+
 :root {
-  --sidebar-bg: #111827;
-  --sidebar-text: #e5e7eb;
-  --bg: #f3f4f6;
-  --content-bg: #ffffff;
-  --border: #e5e7eb;
+  --background: #000000;
+  --foreground: #ffffff;
 }
 
-html, body, #__next {
-  height: 100%;
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #000000;
+    --foreground: #ffffff;
+  }
 }
 
 body {
-  margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto;
-  background: var(--bg);
-}
-
-.layout-grid {
-  display: grid;
-  grid-template-columns: 250px 1fr;
-  min-height: 100vh;
-}
-
-.sidebar {
-  background: var(--sidebar-bg);
-  color: var(--sidebar-text);
-  padding: 20px;
-}
-
-.sidebar .nav-item {
-  display: block;
-  color: #e5e7eb;
-  text-decoration: none;
-  padding: 10px 12px;
-  border-radius: 6px;
-  margin: 6px 0;
-}
-.sidebar .nav-item:hover {
-  background: #1f2a37;
-}
-
-.content {
-  padding: 20px;
-  background: var(--content-bg);
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
 }
