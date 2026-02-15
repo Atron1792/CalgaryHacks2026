@@ -39,7 +39,7 @@ def createNewTable(tName, tType, tHeaders, tHeadersType, tData):
             sqlHeaderString += tHeaders[i] + " " + tHeadersType + ","
             
     # execute the sql create table using table name and header string
-    dbCursor.execute("CREATE TABLE " + tName + "(" + sqlHeaderString + ");")
+    dbCursor.execute("CREATE TABLE " + tName + " (" + sqlHeaderString + ");")
     
     # get all of the data into an sql string
     sqlDataString = ""
@@ -55,9 +55,22 @@ def createNewTable(tName, tType, tHeaders, tHeadersType, tData):
             
         sqlDataString += ")"                        
         
-        if(i == len(tData)):
-            print("hello world")
+        if(i != len(tData)):
+            sqlDataString += ","
+        else:
+            sqlDataString += ";"
+    
+    # add data to new table
+    dbCursor.execute("INSERT INTO " + tName + " VALUES " + sqlDataString)
+    
+    # commit and close the connections
+    dbConnection.commit()
+    dbCursor.close()
+    dbConnection.close()
     
 
+# returns true if no new data source detected 
+# if new data source detected, return:
+#   [Tech stack item name, Table name, [header1, header2, etc], case 1 or 2]
 def startUpDataValidation():
     print("hello world")

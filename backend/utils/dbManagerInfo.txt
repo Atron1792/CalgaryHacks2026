@@ -1,10 +1,14 @@
-CreateNewDB
+CreateNewDB:
 --> Creates a new table for the new data source
 --> if data source tech stack already exists: add table to existing tech stack database
 
-startUpDataValidation
+startUpDataValidation:
 --> checks orderedData vs rawData for discrepancies 
 --> if discrepancy, return notification.
+--> returns 1 of 3 cases:
+--> --> case 1: all data sources is inside ordered data. returns true
+--> --> case 2: tech stack item database doesn't exist, returns: [tech stack item name, table name, list of headers, 1]
+--> --> case 3: tech stack item database does exist, returns: [tech stack item name, table name, list of headers, 2]
 
 Variable formats:
 --> tData:
@@ -13,5 +17,8 @@ Variable formats:
             [row2Attr1,row2Attr2,etc],
             [row3Attr1,row3Attr2,etc]
         ]
---> tName: lowerCase String
---> tHeader
+--> tName (table name): lowercase String
+--> tHeaders: [header1,header2,header3,etc]
+--> tHeadersType: [header1datatype, header2datatype, et]
+--> tType (Tech stack item name): lowercase string 
+
