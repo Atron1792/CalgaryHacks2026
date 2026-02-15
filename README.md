@@ -52,3 +52,5 @@ Two terminals are used during development: one for the backend and one for the f
 
 For the demo we manually pull databases.
 
+debug chance:
+--> for god knows why, Sidebar.tsx sometimes is named with lowercase s instead of capital s. if this error should occur again, please rename the file to the capital s
