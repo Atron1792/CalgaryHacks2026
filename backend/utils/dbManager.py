@@ -213,7 +213,7 @@ def startUpDataValidation():
 # conditions: the list of equal conditions 
 # tType: analytics or CRM
 def getSpecificData(tName, techStackItemName, attributes, conditions, tType):
-    dbLocalPath = orderedDataPath + "/" + tType + "/" + techStackItemName + ".db"
+    dbLocalPath = orderedDataPath + "/" + tType + "/" + techStackItemName +"/" + techStackItemName + ".db"
     
     dbConnection = sqlite3.connect(dbLocalPath)
     dbCursor = dbConnection.cursor()
