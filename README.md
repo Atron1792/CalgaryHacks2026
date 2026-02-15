@@ -1,29 +1,54 @@
-# Pantheon 
+# Pantheon
 
-how to run this code:
+A unified data dashboard built for Calgary Hack 2026.
 
---> create virtual environment (we love those):
-```bash
-pip install requirements
-```
+## Overview
 
-create two separate terminals:
---> one in root directory, one in frontend directory
---> in the front end directory terminal: 
-```bash
-npm install
-```
+Pantheon brings together multiple data sources into a single, cohesive dashboard. It currently focuses on Google Analytics 4 traffic data and supports integrating additional sources (e.g., HubSpot) for a complete view of your metrics.
 
-after setup, to run the code you:
---> in root directory terminal, run: py backend/app.py
---> in the front end directory terminal:
-```bash
-npm run dev
-```
+## Quick Start
 
+Two terminals are used during development: one for the backend and one for the frontend.
 
-Demo format:
---> You will be on the main dashboard, this will contain your google analytics 4 traffic acquisition data 
---> there will be a notification to integrate a new data source from hubSpot.
---> integrate the data source and fully integrate your data 
---> wow what a great demo
+1) Create and activate a virtual environment for the backend (recommended)
+- macOS/Linux:
+  ```bash
+  python3 -m venv .venv
+  source .venv/bin/activate
+  ```
+- Windows:
+  ```bash
+  py -m venv .venv
+  .venv\Scripts\activate
+  ```
+
+2) Install backend dependencies
+    ```bash
+    cd backend
+    pip install -r requirements.txt
+    ```
+
+3) Install frontend dependencies
+- From the frontend directory:
+  ```bash
+  cd frontend
+  npm install
+  ```
+
+## Run the App
+
+- Start the backend (from the root directory):
+  ```bash
+  cd backend
+  py app.py
+  ```
+- Start the frontend (from the root directory):
+  ```bash
+  cd frontend
+  npm run dev
+  ```
+
+## Demo Case
+
+For the demo we manually pull databases.
+

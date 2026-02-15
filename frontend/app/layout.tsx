@@ -4,7 +4,7 @@ import ThemeProvider from "@/app/components/ThemeProvider";
 import NotificationProvider from "@/app/components/NotificationProvider";
 
 export const metadata = {
-  title: "Panethon",
+  title: "Pantheon",
   description: "A unified data visualization dashboard.",
 };
 
