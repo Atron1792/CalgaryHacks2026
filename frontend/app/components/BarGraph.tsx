@@ -77,21 +77,21 @@ export default function BarGraph() {
   }, [items]);
 
   return (
-    <section className="w-full max-w-[39rem]">
+    <section className="w-full max-w-[39rem] -mt-3.5">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold --text-color">
-          Traffic Acquisition
-        </h2>
         {loading ? (
-          <span className="text-sm text-slate-400">Loading...</span>
+          <span className="text-sm text-[color:var(--text-muted)]">Loading...</span>
         ) : null}
       </div>
 
-      <div className="rounded-xl border border-slate-800/60 bg-slate-900/40 p-5 shadow-sm">
+      <div className="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-1)] p-5 shadow-sm">
+        <h2 className="text-xl font-semibold text-[color:var(--text-primary)] mb-4">
+          Traffic Acquisition
+        </h2>
         {error ? (
-          <div className="text-sm text-red-300">{error}</div>
+          <div className="text-sm text-[color:var(--text-danger)]">{error}</div>
         ) : items.length === 0 ? (
-          <div className="text-sm text-slate-400">
+          <div className="text-sm text-[color:var(--text-muted)]">
             No data available yet.
           </div>
         ) : (
@@ -107,11 +107,11 @@ export default function BarGraph() {
 
               return (
                 <div key={`${item.label}-${index}`} className="flex items-center gap-3">
-                  <div className="w-36 text-sm text-slate-200">
+                  <div className="w-36 text-sm text-[color:var(--text-primary)]">
                     {item.label}
                   </div>
                   <div className="flex-1">
-                    <div className="h-3 rounded-full bg-slate-800">
+                    <div className="h-3 rounded-full bg-[color:var(--surface-3)]">
                       <div
                         className="h-3 rounded-full"
                         style={{
@@ -121,10 +121,10 @@ export default function BarGraph() {
                       />
                     </div>
                   </div>
-                  <div className="w-20 text-right text-sm text-slate-300 tabular-nums">
+                  <div className="w-20 text-right text-sm text-[color:var(--text-subtle)] tabular-nums">
                     {item.value.toLocaleString()}
                   </div>
-                  <div className="w-14 text-right text-xs text-slate-500 tabular-nums">
+                  <div className="w-14 text-right text-xs text-[color:var(--text-muted)] tabular-nums">
                     {sharePct.toFixed(1)}%
                   </div>
                 </div>

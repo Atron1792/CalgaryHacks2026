@@ -110,15 +110,17 @@ export default function IntegrationNode({
         <Link href={href} className="block">
           <div className="flex flex-col items-center gap-3">
             <div
-              className="flex h-28 w-28 items-center justify-center rounded-full border-4 bg-slate-900/70 transition-transform group-hover:scale-105"
+              className="flex h-28 w-28 items-center justify-center rounded-full border-4 bg-[color:var(--surface-2)] transition-transform group-hover:scale-105"
               style={{ borderColor: ringColor }}
               aria-label={`${name} status ${status}`}
             >
-              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-slate-950">
-                <span className="text-lg font-semibold text-white">{label}</span>
+              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[color:var(--surface-3)]">
+                <span className="text-lg font-semibold text-[color:var(--text-primary)]">
+                  {label}
+                </span>
               </div>
             </div>
-            <div className="text-sm text-slate-300 group-hover:text-white">
+            <div className="text-sm text-[color:var(--text-subtle)] group-hover:text-[color:var(--text-primary)]">
               {name}
             </div>
           </div>
@@ -140,7 +142,7 @@ export default function IntegrationNode({
                 y1={line.y1}
                 x2={line.x2}
                 y2={line.y2}
-                className="text-slate-600"
+                className="text-[color:var(--text-muted)]"
                 vectorEffect="non-scaling-stroke"
               />
             </svg>,

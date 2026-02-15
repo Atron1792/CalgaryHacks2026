@@ -17,7 +17,7 @@ const COLORS = {
   },
   light: {
     title: "#1f2937",
-    description: "#6b7280",
+    description: "#2a2a2a",
     buttonBg: "#e5e7eb",
     toggleIndicator: "#1f2937",
   },

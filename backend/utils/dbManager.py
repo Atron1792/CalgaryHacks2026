@@ -271,6 +271,19 @@ def getAllData(tName, techStackItemName, conditions, tType):
     return result
 
 
+def getTableHeaders(tName, techStackItemName, tType):
+    dbLocalPath = orderedDataPath + "/" + tType + "/" + techStackItemName + "/" + techStackItemName + ".db"
+    dbConnection = sqlite3.connect(dbLocalPath)
+    dbCursor = dbConnection.cursor()
+
+    dbCursor.execute("PRAGMA table_info(\"" + tName + "\");")
+    columns = [row[1] for row in dbCursor.fetchall()]
+
+    dbCursor.close()
+    dbConnection.close()
+    return columns
+
+
 # gets the basic information on a data source 
 # output: [tHeader1, tHeader2, etc]
 def getCSVDataSourceHeaders(techStackItemName, tName):

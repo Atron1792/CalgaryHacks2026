@@ -28,13 +28,15 @@ export function Sidebar() {
 
   return (
     // Dark blue sidebar container with border on the right
-    <aside className="w-64 border-r" style={{ backgroundColor: '#00152b' }}>
+    <aside className="w-64 border-r bg-[color:var(--sidebar-bg)] border-[color:var(--sidebar-border)]">
       {/* Logo section linking back to dashboard */}
-      <div className="px-6 py-5 border-b border-blue-800">
+      <div className="px-6 py-5 border-b border-[color:var(--sidebar-border)]">
         <Link href="/" className="inline-flex items-center gap-2">
           <Image src="/icon0.svg" alt="Logo" width={32} height={32} className="rounded-md" />
           <div className="leading-tight">
-            <div className="text-xl font-semibold text-white">Pantheon</div>
+            <div className="text-xl font-semibold text-[color:var(--text-primary)]">
+              Pantheon
+            </div>
           </div>
         </Link>
       </div>
@@ -50,10 +52,10 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={[
-                "block rounded-md px-3 py-2 text-sm text-white",
+                "block rounded-md px-3 py-2 text-sm text-[color:var(--text-primary)]",
                 active
-                  ? "bg-blue-800 font-medium"
-                  : "hover:bg-blue-900",
+                  ? "bg-[color:var(--sidebar-active)] font-medium"
+                  : "hover:bg-[color:var(--sidebar-hover)]",
               ].join(" ")}
             >
               {item.label}

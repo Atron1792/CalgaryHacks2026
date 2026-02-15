@@ -65,12 +65,11 @@ export default function ApiAccessKey({
   const displayValue = isVisible ? value : maskKey(value);
 
   return (
-    <div
-      className="flex items-center justify-between p-4 rounded-lg"
-      style={{ backgroundColor: "#0f172a", border: "1px solid #1e293b" }}
-    >
+    <div className="flex items-center justify-between p-4 rounded-lg bg-[color:var(--surface-1)] border border-[color:var(--border)]">
       <div className="flex-1">
-        <div className="text-sm font-medium text-white">{name}</div>
+        <div className="text-sm font-medium text-[color:var(--text-primary)]">
+          {name}
+        </div>
         {isEditing ? (
           <input
             type="text"
@@ -89,11 +88,11 @@ export default function ApiAccessKey({
                 );
               }
             }}
-            className="text-xs mt-2 w-full p-2 bg-slate-800 text-white rounded border border-slate-600 font-mono"
+            className="text-xs mt-2 w-full p-2 bg-[color:var(--surface-2)] text-[color:var(--text-primary)] rounded border border-[color:var(--border-strong)] font-mono"
             placeholder="Enter API key"
           />
         ) : (
-          <div className="text-xs text-zinc-500 mt-2 font-mono break-all">
+          <div className="text-xs text-[color:var(--text-muted)] mt-2 font-mono break-all">
             {displayValue}
           </div>
         )}
@@ -103,7 +102,7 @@ export default function ApiAccessKey({
         {/* Toggle visibility button */}
         <button
           onClick={() => setIsVisible(!isVisible)}
-          className="px-3 py-1 text-xs rounded bg-blue-900 hover:bg-blue-800 text-white transition-colors"
+          className="px-3 py-1 text-xs rounded bg-[color:var(--accent)] hover:bg-[color:var(--accent-hover)] text-[color:var(--text-on-accent)] transition-colors"
           aria-label={isVisible ? "Hide key" : "Show key"}
         >
           {isVisible ? "Hide" : "Show"}
@@ -112,7 +111,7 @@ export default function ApiAccessKey({
         {/* Edit button */}
         <button
           onClick={() => setIsEditing(!isEditing)}
-          className="px-3 py-1 text-xs rounded bg-purple-900 hover:bg-purple-800 text-white transition-colors"
+          className="px-3 py-1 text-xs rounded bg-[color:var(--accent-secondary)] hover:bg-[color:var(--accent-secondary-hover)] text-[color:var(--text-on-accent)] transition-colors"
           aria-label={isEditing ? "Done editing" : "Edit key"}
         >
           {isEditing ? "Done" : "Edit"}
@@ -121,7 +120,7 @@ export default function ApiAccessKey({
         {/* Copy button */}
         <button
           onClick={copyToClipboard}
-          className="px-3 py-1 text-xs rounded bg-green-900 hover:bg-green-800 text-white transition-colors"
+          className="px-3 py-1 text-xs rounded bg-[color:var(--success)] hover:bg-[color:var(--success-hover)] text-[color:var(--text-on-accent)] transition-colors"
           aria-label="Copy key"
         >
           {isCopied ? "Copied!" : "Copy"}

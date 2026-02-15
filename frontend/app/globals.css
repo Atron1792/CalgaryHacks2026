@@ -1,28 +1,59 @@
 @import "tailwindcss";
 
-/* Dark mode by default */
+/* Theme tokens powered by light-dark() */
 :root {
-  --background: #000000;
-  --foreground: #ffffff;
-}
+  color-scheme: light dark;
 
-/* Light mode from system preference */
-@media (prefers-color-scheme: light) {
-  :root {
-    --background: #ffffff;
-    --foreground: #111827;
-  }
+  --background: light-dark(#ffffff, #000000);
+  --foreground: light-dark(#0f172a, #ffffff);
+
+  --text-primary: var(--foreground);
+  --text-muted: light-dark(#475569, #94a3b8);
+  --text-subtle: light-dark(#334155, #cbd5e1);
+  --text-on-accent: light-dark(#ffffff, #ffffff);
+  --text-danger: light-dark(#b91c1c, #fca5a5);
+
+  --surface-1: light-dark(rgba(255, 255, 255, 0.92), rgba(15, 23, 42, 0.5));
+  --surface-2: light-dark(rgba(148, 163, 184, 0.18), rgba(30, 41, 59, 0.65));
+  --surface-3: light-dark(rgba(148, 163, 184, 0.35), rgba(15, 23, 42, 0.85));
+  --surface-hover: light-dark(rgba(148, 163, 184, 0.24), rgba(30, 41, 59, 0.85));
+  --surface-disabled: light-dark(rgba(148, 163, 184, 0.25), rgba(51, 65, 85, 0.6));
+
+  --border: light-dark(rgba(15, 23, 42, 0.12), rgba(148, 163, 184, 0.2));
+  --border-strong: light-dark(rgba(15, 23, 42, 0.2), rgba(148, 163, 184, 0.35));
+
+  --accent: light-dark(#2563eb, #3b82f6);
+  --accent-hover: light-dark(#1d4ed8, #2563eb);
+  --accent-strong: light-dark(#1e40af, #1e3a8a);
+  --accent-secondary: light-dark(#7c3aed, #8b5cf6);
+  --accent-secondary-hover: light-dark(#6d28d9, #7c3aed);
+  --success: light-dark(#16a34a, #22c55e);
+  --success-hover: light-dark(#15803d, #16a34a);
+  --warning: light-dark(#d97706, #f59e0b);
+  --danger: light-dark(#dc2626, #ef4444);
+
+  --info-bg: light-dark(rgba(37, 99, 235, 0.12), rgba(37, 99, 235, 0.35));
+  --info-border: light-dark(rgba(37, 99, 235, 0.5), rgba(59, 130, 246, 0.6));
+  --success-bg: light-dark(rgba(22, 163, 74, 0.12), rgba(34, 197, 94, 0.35));
+  --success-border: light-dark(rgba(22, 163, 74, 0.5), rgba(34, 197, 94, 0.6));
+  --warning-bg: light-dark(rgba(217, 119, 6, 0.15), rgba(245, 158, 11, 0.35));
+  --warning-border: light-dark(rgba(217, 119, 6, 0.55), rgba(245, 158, 11, 0.6));
+  --danger-bg: light-dark(rgba(220, 38, 38, 0.15), rgba(239, 68, 68, 0.35));
+  --danger-border: light-dark(rgba(220, 38, 38, 0.55), rgba(239, 68, 68, 0.6));
+
+  --sidebar-bg: light-dark(#f8fafc, #00152b);
+  --sidebar-border: light-dark(rgba(15, 23, 42, 0.12), rgba(30, 58, 138, 0.6));
+  --sidebar-hover: light-dark(rgba(37, 99, 235, 0.12), rgba(37, 99, 235, 0.2));
+  --sidebar-active: light-dark(rgba(37, 99, 235, 0.2), rgba(30, 64, 175, 0.9));
 }
 
 /* Manual overrides from the settings toggle */
 [data-theme="dark"] {
-  --background: #000000;
-  --foreground: #ffffff;
+  color-scheme: dark;
 }
 
 [data-theme="light"] {
-  --background: #ffffff;
-  --foreground: #111827;
+  color-scheme: light;
 }
 
 body {

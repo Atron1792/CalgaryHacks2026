@@ -122,7 +122,7 @@ export default function DataValidation() {
     return (
       <div className="p-8">
         <h1 className="text-3xl font-bold mb-8">Data Validation</h1>
-        <p className="text-gray-400">Loading...</p>
+        <p className="text-[color:var(--text-muted)]">Loading...</p>
       </div>
     );
   }

@@ -58,8 +58,10 @@ export default function IntegrationVisualizationPage() {
 
   return (
     <div className="p-8">
-      <h1 className="text-3xl font-bold --text-color mb-2">Integration Visualization</h1>
-      <p className="text-sm text-slate-400 mb-8">
+      <h1 className="text-3xl font-bold text-[color:var(--text-primary)] mb-2">
+        Integration Visualization
+      </h1>
+      <p className="text-sm text-[color:var(--text-muted)] mb-8">
         Live status from acquisition to visualization.
       </p>
 

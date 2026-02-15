@@ -13,7 +13,8 @@ from utils.dbManager import (
     getCSVDataSourceHeaders,
     getCSVDataBreakDown,
     createNewTable,
-    checkAttributeType
+    checkAttributeType,
+    getTableHeaders
 )
 
 
@@ -52,12 +53,10 @@ def check_and_notify_validation():
                 print(f"Failed to send notification: {message} - {e}")
         
         print(f"⚠ Found {len(validation_result)} unintegrated data source(s)")
-    else:
-        print("✓ All data sources are integrated")
 
 # Health check
-@app.get("/api/health")
-def health():
+@app.route("/")
+def index():
     return jsonify({"status": "ok"})
 
 @app.get("/api/barData")
@@ -74,20 +73,21 @@ def barData():
 def contactData():
     outputValues = []
     # Handle both GET and POST requests
-    filterType = request.args.get('filterType') or request.form.get('filterType')
+    filterType = request.args.get('filterType') or request.form.get('filterType') or "none"
+    columns = getTableHeaders("contacts", "hubSpot", "CRM")
     
-    if filterType:
-        if filterType == "none":
-            outputValues = getAllData("contacts","hubSpot", "" ,"CRM")
-        else:
-            # Use parameterized query approach for safety
-            outputValues = getAllData("contacts","hubSpot", f"\"Marketing contact status\" = '{filterType}'" ,"CRM")
+    if filterType == "none":
+        outputValues = getAllData("contacts", "hubSpot", "", "CRM")
+    else:
+        # Use parameterized query approach for safety
+        outputValues = getAllData(
+            "contacts",
+            "hubSpot",
+            f"\"Marketing contact status\" = '{filterType}'",
+            "CRM",
+        )
         
-    return jsonify(outputValues)
-
-@app.route("/")
-def index():
-    return jsonify({"status": "ok"})
+    return jsonify({"columns": columns, "rows": outputValues})
 
 @app.route("/api/companies")
 def companyData():

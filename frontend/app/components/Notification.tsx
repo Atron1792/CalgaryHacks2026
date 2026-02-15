@@ -83,20 +83,20 @@ type NotificationItemProps = {
  */
 const NOTIFICATION_COLORS = {
   info: {
-    bg: "bg-blue-600",
-    border: "border-blue-500",
+    bg: "bg-[color:var(--info-bg)]",
+    border: "border-[color:var(--info-border)]",
   },
   success: {
-    bg: "bg-green-600",
-    border: "border-green-500",
+    bg: "bg-[color:var(--success-bg)]",
+    border: "border-[color:var(--success-border)]",
   },
   warning: {
-    bg: "bg-orange-600",
-    border: "border-orange-500",
+    bg: "bg-[color:var(--warning-bg)]",
+    border: "border-[color:var(--warning-border)]",
   },
   error: {
-    bg: "bg-red-600",
-    border: "border-red-500",
+    bg: "bg-[color:var(--danger-bg)]",
+    border: "border-[color:var(--danger-border)]",
   },
 };
 
@@ -131,13 +131,15 @@ function NotificationItem({ notification, onDismiss }: NotificationItemProps) {
       }`}
     >
       <div className="flex items-start justify-between gap-3">
-        <p className="text-white text-sm font-medium flex-1">{notification.message}</p>
+        <p className="text-[color:var(--text-on-accent)] text-sm font-medium flex-1">
+          {notification.message}
+        </p>
         <button
           onClick={() => {
             setIsVisible(false);
             setTimeout(() => onDismiss(notification.id), 300);
           }}
-          className="text-white/80 hover:text-white transition-colors"
+          className="text-[color:var(--text-on-accent)] opacity-80 hover:opacity-100 transition-opacity"
           aria-label="Dismiss notification"
         >
           <svg
