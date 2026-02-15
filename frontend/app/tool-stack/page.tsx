@@ -10,11 +10,13 @@ export default function ToolStackPage() {
         <div className="space-y-3">
           <ApiAccessKey
             name="Google Analytics API"
-            initialValue={process.env.NEXT_PUBLIC_GA_API_KEY || "ga_key_placeholder"}
+            initialValue={process.env.NEXT_PUBLIC_GA_API_KEY || ""}
+            storageKey="gaApiKey"
           />
           <ApiAccessKey
             name="HubSpot API"
-            initialValue={process.env.NEXT_PUBLIC_HUBSPOT_API_KEY || "hubspot_key_placeholder"}
+            initialValue={process.env.NEXT_PUBLIC_HUBSPOT_API_KEY || ""}
+            storageKey="hubspotApiKey"
           />
         </div>
       </div>

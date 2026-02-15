@@ -1,6 +1,6 @@
 "use client";
 
-import {useState} from "react";
+import { useEffect, useState } from "react";
 
 /**
  * Props for the ApiAccessKey component.
@@ -8,6 +8,7 @@ import {useState} from "react";
 interface ApiAccessKeyProps {
   name: string;
   initialValue: string;
+  storageKey?: string;
 }
 
 /**
@@ -16,11 +17,29 @@ interface ApiAccessKeyProps {
  * Displays a single editable API key with functionality to view, edit, and copy.
  * Keys are initially hidden for security and can be toggled to reveal the full value.
  */
-export default function ApiAccessKey({ name, initialValue }: ApiAccessKeyProps) {
+export default function ApiAccessKey({
+  name,
+  initialValue,
+  storageKey,
+}: ApiAccessKeyProps) {
   const [value, setValue] = useState(initialValue);
   const [isEditing, setIsEditing] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+
+  useEffect(() => {
+    if (!storageKey) {
+      return;
+    }
+
+    const savedValue = localStorage.getItem(storageKey);
+
+    if (savedValue !== null) {
+      setValue(savedValue);
+    } else {
+      localStorage.setItem(storageKey, initialValue);
+    }
+  }, [storageKey, initialValue]);
 
   /**
    * Copy the API key value to clipboard and show feedback.
@@ -56,7 +75,20 @@ export default function ApiAccessKey({ name, initialValue }: ApiAccessKeyProps) 
           <input
             type="text"
             value={value}
-            onChange={(e) => setValue(e.target.value)}
+            onChange={(e) => {
+              const nextValue = e.target.value;
+
+              setValue(nextValue);
+
+              if (storageKey) {
+                localStorage.setItem(storageKey, nextValue);
+                window.dispatchEvent(
+                  new CustomEvent("api-key-updated", {
+                    detail: { key: storageKey, value: nextValue },
+                  })
+                );
+              }
+            }}
             className="text-xs mt-2 w-full p-2 bg-slate-800 text-white rounded border border-slate-600 font-mono"
             placeholder="Enter API key"
           />

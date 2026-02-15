@@ -18,205 +18,121 @@ const COLORS = [
   "#84cc16",
 ];
 
-type NormalizedDatum = { label: string; value: number };
-
-function normalize(raw: BarData[]): NormalizedDatum[] {
-  if (!Array.isArray(raw)) return [];
-
-  const out: NormalizedDatum[] = [];
-
-  for (const obj of raw) {
-    if (!obj || typeof obj !== "object") continue;
-
-    // Each object is expected to have exactly one key-value
-    const entries = Object.entries(obj);
-    if (entries.length === 0) continue;
-
-    const [label, valueRaw] = entries[0];
-
-    // Coerce value safely
-    const value =
-      typeof valueRaw === "number"
-        ? valueRaw
-        : typeof valueRaw === "string"
-        ? Number(valueRaw)
-        : NaN;
-
-    if (!label) continue;
-    if (!Number.isFinite(value)) continue;
-
-    // Drop Total row
-    if (label.toLowerCase() === "total") continue;
-
-    out.push({ label, value });
-  }
-
-  return out;
-}
+type BarItem = {
+  label: string;
+  value: number;
+};
 
 export default function BarGraph() {
-  const [raw, setRaw] = useState<BarData[]>([]);
+  const [data, setData] = useState<BarData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch from Next proxy route (recommended)
   useEffect(() => {
-    async function fetchData() {
-      try {
-        setLoading(true);
-        setError(null);
+    let cancelled = false;
 
-        // IMPORTANT: use the same route you actually created in Next:
-        // frontend/app/api/barData/route.ts  -> "/api/barData"
+    const fetchData = async () => {
+      try {
         const res = await fetch("/api/barData", { cache: "no-store" });
 
-        if (!res.ok) throw new Error(`Request failed (${res.status})`);
+        if (!res.ok) {
+          throw new Error(`Failed to load data (${res.status})`);
+        }
 
-        const json = await res.json();
-        setRaw(json);
-      } catch (e: any) {
-        setError(e?.message ?? "Failed to load data");
+        const json = (await res.json()) as BarData[];
+
+        if (!cancelled) {
+          setData(json);
+          setError(null);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Unexpected error");
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
-    }
+    };
 
     fetchData();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const data = useMemo(() => normalize(raw), [raw]);
+  const items = useMemo<BarItem[]>(() => {
+    return data.flatMap((entry) => {
+      return Object.entries(entry).map(([label, value]) => ({
+        label,
+        value,
+      }));
+    });
+  }, [data]);
 
   const maxValue = useMemo(() => {
-    if (data.length === 0) return 0;
-    return Math.max(...data.map((d) => d.value));
-  }, [data]);
-
-  const median = useMemo(() => {
-    if (data.length === 0) return 0;
-    const values = [...data.map((d) => d.value)].sort((a, b) => a - b);
-    const mid = Math.floor(values.length / 2);
-    return values.length % 2 === 0
-      ? (values[mid - 1] + values[mid]) / 2
-      : values[mid];
-  }, [data]);
-
-  const medianPct = maxValue > 0 ? (median / maxValue) * 100 : 0;
-
-  if (loading) return <div style={{ color: "white" }}>Loading chart data…</div>;
-  if (error) return <div style={{ color: "#f87171" }}>Error: {error}</div>;
-  if (data.length === 0) return <div style={{ color: "white" }}>No data available</div>;
+    return items.reduce((max, item) => Math.max(max, item.value), 0) || 1;
+  }, [items]);
 
   return (
-    // Quarter-page sizing:
-    // - max width ~ 520px
-    // - fixed height ~ 280px
-    // This usually reads as "about 1/4" of a typical dashboard view.
-    <div
-      style={{
-        width: "min(520px, 25vw)",   // quarter-ish width
-        minWidth: "360px",          // don’t become unusably small
-        height: "280px",            // quarter-ish height
-        background: "#0f172a",       // deep navy
-        border: "1px solid #1f2937",
-        borderRadius: 12,
-        padding: 16,
-        display: "flex",
-        flexDirection: "column",
-        color: "white",
-      }}
-    >
-      <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 12 }}>
-        Google Analytics – Traffic by Channel
+    <section className="w-full max-w-[39rem]">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-semibold --text-color">
+          Traffic Acquisition
+        </h2>
+        {loading ? (
+          <span className="text-sm text-slate-400">Loading...</span>
+        ) : null}
       </div>
 
-      {/* Chart area */}
-      <div
-        style={{
-          position: "relative",
-          flex: 1,
-          background: "#111827",
-          border: "1px solid #1f2937",
-          borderRadius: 10,
-          padding: 12,
-          overflow: "hidden",
-        }}
-      >
-        {/* Median line */}
-        <div
-          title={`Median: ${median.toLocaleString()}`}
-          style={{
-            position: "absolute",
-            left: 12,
-            right: 12,
-            bottom: `${medianPct}%`,
-            borderTop: "1px dashed #facc15",
-            opacity: 0.75,
-            pointerEvents: "none",
-          }}
-        />
+      <div className="rounded-xl border border-slate-800/60 bg-slate-900/40 p-5 shadow-sm">
+        {error ? (
+          <div className="text-sm text-red-300">{error}</div>
+        ) : items.length === 0 ? (
+          <div className="text-sm text-slate-400">
+            No data available yet.
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {items.map((item, index) => {
+              const widthPct = Math.max(
+                2,
+                Math.round((item.value / maxValue) * 100)
+              );
+              const sharePct = maxValue
+                ? (item.value / maxValue) * 100
+                : 0;
 
-        {/* Bars row */}
-        <div
-          style={{
-            height: "100%",
-            display: "flex",
-            alignItems: "flex-end",
-            gap: 10,
-            overflowX: "auto",
-            paddingBottom: 4,
-          }}
-        >
-          {data.map((d, i) => {
-            const pct = maxValue > 0 ? (d.value / maxValue) * 100 : 0;
-            const color = COLORS[i % COLORS.length];
-
-            return (
-              <div
-                key={d.label}
-                style={{
-                  width: 70,
-                  flex: "0 0 auto",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "flex-end",
-                  gap: 6,
-                }}
-              >
-                {/* Bar */}
-                <div
-                  title={`${d.label}: ${d.value.toLocaleString()}`}
-                  style={{
-                    height: `${pct}%`,
-                    minHeight: 3,
-                    background: color,
-                    borderRadius: "8px 8px 0 0",
-                    transition: "height 200ms ease",
-                  }}
-                />
-
-                {/* Label + value */}
-                <div style={{ textAlign: "center" }}>
-                  <div
-                    style={{
-                      fontSize: 11,
-                      color: "#cbd5e1",
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
-                    title={d.label}
-                  >
-                    {d.label}
+              return (
+                <div key={`${item.label}-${index}`} className="flex items-center gap-3">
+                  <div className="w-36 text-sm text-slate-200">
+                    {item.label}
                   </div>
-                  <div style={{ fontSize: 11, fontWeight: 600 }}>
-                    {d.value.toLocaleString()}
+                  <div className="flex-1">
+                    <div className="h-3 rounded-full bg-slate-800">
+                      <div
+                        className="h-3 rounded-full"
+                        style={{
+                          width: `${widthPct}%`,
+                          backgroundColor: COLORS[index % COLORS.length],
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="w-20 text-right text-sm text-slate-300 tabular-nums">
+                    {item.value.toLocaleString()}
+                  </div>
+                  <div className="w-14 text-right text-xs text-slate-500 tabular-nums">
+                    {sharePct.toFixed(1)}%
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
-    </div>
+    </section>
   );
 }
