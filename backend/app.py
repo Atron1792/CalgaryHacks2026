@@ -1,7 +1,13 @@
-from flask import Flask, render_template
+from flask import Flask
+from flask_cors import CORS
+from .routes import api
 
-app = Flask(__name__)
+def create_app():
+    app = Flask(__name__)
+    CORS(app)  # loosened for local dev; tighten for prod
+    app.register_blueprint(api, url_prefix="/api")
+    return app
 
-@app.route("/")
-def index():
-    return render_template("index.html")
+if __name__ == "__main__":
+    app = create_app()
+    app.run(debug=True, port=5000)
